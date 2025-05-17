@@ -93,19 +93,15 @@ DockFlare listens for Docker container events.
          - dockflare_data:/app/data  # Persistent storage for state
        networks:
          - cloudflare-net  # Network for communication with cloudflared agent
-         logging:
        labels: # Optional keep in mind to set access policy
          - cloudflare.tunnel.enable=true
          - cloudflare.tunnel.hostname=dockflare.yourdomain.tld # update your domain 
          - cloudflare.tunnel.service=http://dockflare:5000 
-       driver: "json-file"
-       options:
-         max-size: "10m"
-         max-file: "2"
    volumes:
      dockflare_data:
    networks:
      cloudflare-net:
+      name: cloudflare-net
    ```
 
 2. **Create `.env` File**:
@@ -117,7 +113,7 @@ DockFlare listens for Docker container events.
    # Cloudflare Zone ID (REQUIRED)
    CF_ZONE_ID=your_cloudflare_zone_id
    # Tunnel Name (REQUIRED only when NOT using external cloudflared)
-   TUNNEL_NAME=DockFlare-tunnel
+   TUNNEL_NAME=DockFlare
    # Use External Cloudflared (OPTIONAL)
    USE_EXTERNAL_CLOUDFLARED=false
    # External Tunnel ID (REQUIRED if USE_EXTERNAL_CLOUDFLARED=true) 
@@ -142,6 +138,7 @@ DockFlare listens for Docker container events.
    # TRUSTED_PROXIES=172.16.0.0/12,192.168.0.0/16
    # Default TLS Verification Setting (skip verification) (default: false)
    DEFAULT_NO_TLS_VERIFY=false
+   STATE_FILE_PATH=/app/data/state.json
 
 3. **Run DockFlare**:
 
@@ -179,7 +176,7 @@ services:
       # Optional: Disable TLS verification for this service
       # cloudflare.tunnel.no_tls_verify: "true"
     networks:
-      - cloudflare-net  # Must be in a network that DockFlare can reach
+      - cloudflare-net  # Must be in a network that DockFlare can reach     
 ```
 
 #### 2. Indexed Labels (Multiple Domains)
